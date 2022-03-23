@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "kanban_board",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,6 +13,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
+    "recoil": "^0.6.1",
+    "sass": "^1.49.9",
     "typescript": "^4.6.2",
     "web-vitals": "^2.1.4"
   },
