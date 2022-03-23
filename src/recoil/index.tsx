@@ -2,7 +2,9 @@ import { atom } from 'recoil';
 
 interface cardtype {
   id: number;
-  text: string;
+  title: string;
+  content: string;
+  category: string;
   isChecked: boolean;
 }
 export const kanbanListState = atom<cardtype[]>({
