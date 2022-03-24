@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { useDrag } from 'react-dnd';
 import { useRecoilState } from 'recoil';
+import { TITLE_NAME } from '../App';
 import { kanbanListState } from '../recoil';
 import './Card.scss';
 
@@ -50,10 +51,11 @@ function Card({ item }: { item: cardtype }) {
     setList([...list.slice(0, index), ...list.slice(index + 1)]);
   };
 
-  const changeItemColumn = (selectedItem: any, title: any) => {
-    console.log(title);
+  const changeItemCategory = (selectedItem: cardtype, title: string) => {
+    console.log(selectedItem);
     setList((prev) => {
       return prev.map((e) => {
+        console.log(e);
         return {
           ...e,
           category: e.id === selectedItem.id ? title : e.category,
@@ -68,12 +70,26 @@ function Card({ item }: { item: cardtype }) {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (item: any, monitor) => {
-      const dropResult: any = monitor.getDropResult();
+    end: (item: cardtype, monitor) => {
+      const dropResult: drop | null = monitor.getDropResult();
+      console.log(dropResult);
+      const { TO_DO, IN_PROGRESS, DONE, NOTE } = TITLE_NAME;
       if (dropResult) {
-        changeItemColumn(item, 'To do');
-      } else {
-        changeItemColumn(item, 'In progress');
+        switch (dropResult.name) {
+          case TO_DO:
+            console.log(dropResult);
+            changeItemCategory(item, TO_DO);
+            break;
+          case IN_PROGRESS:
+            changeItemCategory(item, IN_PROGRESS);
+            break;
+          case DONE:
+            changeItemCategory(item, DONE);
+            break;
+          case NOTE:
+            changeItemCategory(item, NOTE);
+            break;
+        }
       }
     },
   }));
@@ -115,11 +131,3 @@ function Card({ item }: { item: cardtype }) {
 }
 
 export default React.memo(Card);
-
-interface cardtype {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  isChecked: boolean;
-}
