@@ -1,23 +1,25 @@
 import React, { useCallback, useRef } from 'react';
+import { useDrag } from 'react-dnd';
 import { useRecoilState } from 'recoil';
 import { kanbanListState } from '../recoil';
 import './Card.scss';
 
-interface cardtype {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  isChecked: boolean;
-}
-
-export const Card = ({ item }: { item: cardtype }) => {
+function Card({ item }: { item: cardtype }) {
   const [list, setList] = useRecoilState(kanbanListState);
   const index = list.findIndex((data) => data === item);
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const replaceIndex = (list: cardtype[], index: number, data: cardtype) => {
     return [...list.slice(0, index), data, ...list.slice(index + 1)];
+  };
+
+  const onCheckbox = () => {
+    const newList = replaceIndex(list, index, {
+      ...item,
+      isChecked: true,
+      category: 'Done',
+    });
+    setList(newList);
   };
 
   const editTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,14 +38,6 @@ export const Card = ({ item }: { item: cardtype }) => {
     setList(newList);
   };
 
-  const onCheckbox = () => {
-    const newList = replaceIndex(list, index, {
-      ...item,
-      isChecked: !item.isChecked,
-    });
-    setList(newList);
-  };
-
   const handleResizeHeight = useCallback(() => {
     if (ref === null || ref.current === null) {
       return;
@@ -53,11 +47,43 @@ export const Card = ({ item }: { item: cardtype }) => {
   }, []);
 
   const deleteItem = () => {
-    setList(list.filter((data: cardtype) => data.id !== index));
+    setList([...list.slice(0, index), ...list.slice(index + 1)]);
   };
 
+  const changeItemColumn = (selectedItem: any, title: any) => {
+    console.log(title);
+    setList((prev) => {
+      return prev.map((e) => {
+        return {
+          ...e,
+          category: e.id === selectedItem.id ? title : e.category,
+        };
+      });
+    });
+  };
+
+  const [{ isDragging }, dragRef] = useDrag(() => ({
+    type: 'card',
+    item: item,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    end: (item: any, monitor) => {
+      const dropResult: any = monitor.getDropResult();
+      if (dropResult) {
+        changeItemColumn(item, 'To do');
+      } else {
+        changeItemColumn(item, 'In progress');
+      }
+    },
+  }));
+
   return (
-    <div className="cardWrap">
+    <div
+      className="cardWrap"
+      ref={dragRef}
+      style={{ opacity: isDragging ? '0.3' : '1' }}
+    >
       <span className="titleWrap">
         <input type="checkbox" checked={item.isChecked} onChange={onCheckbox} />
         <input
@@ -72,10 +98,12 @@ export const Card = ({ item }: { item: cardtype }) => {
         className="cardContent"
         value={item.content}
         onChange={editText}
-        placeholder="내용을 입력하세요"
-        ref={ref}
         onInput={handleResizeHeight}
+        ref={ref}
+        placeholder="내용을 입력하세요"
+        spellCheck="false"
       />
+
       <img
         className="deleteimg"
         src="images/cancel.png"
@@ -84,4 +112,14 @@ export const Card = ({ item }: { item: cardtype }) => {
       />
     </div>
   );
-};
+}
+
+export default React.memo(Card);
+
+interface cardtype {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  isChecked: boolean;
+}
