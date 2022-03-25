@@ -1,18 +1,12 @@
 import { useCallback } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { kanbanListState } from '../recoil';
+import React from 'react';
 import './KanbanCreator.scss';
 
-interface cardtype {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  isChecked: boolean;
-}
-export const KanbanCreator = ({ title }: { title: string }) => {
-  const setKanbanList = useSetRecoilState<cardtype[]>(kanbanListState);
-  const kanbanList = useRecoilValue<cardtype[]>(kanbanListState);
+function KanbanCreator({ title }: { title: string }) {
+  const [kanbanList, setKanbanList] = useRecoilState(kanbanListState);
+
   const getId: number =
     kanbanList.length > 0 ? kanbanList[kanbanList.length - 1].id + 1 : 0;
 
@@ -39,4 +33,6 @@ export const KanbanCreator = ({ title }: { title: string }) => {
       </button>
     </div>
   );
-};
+}
+
+export default React.memo(KanbanCreator);

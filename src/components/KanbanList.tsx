@@ -1,20 +1,9 @@
-import { useRecoilValue } from 'recoil';
-import { kanbanListState } from '../recoil';
-import { KanbanCreator } from './KanbanCreator';
-import Card from './Card';
-import './KanbanList.scss';
+import React from 'react';
+import KanbanCreator from './KanbanCreator';
 import { useDrop } from 'react-dnd';
+import './KanbanList.scss';
 
-export const KanbanList = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: any;
-}) => {
-  // const kanbanList = useRecoilValue(kanbanListState);
-  // const cardData = kanbanList.filter((data) => data.category === title);
-
+function KanbanList({ title, children }: { title: string; children: any }) {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'card',
     drop: () => ({ name: title }),
@@ -33,4 +22,6 @@ export const KanbanList = ({
       </div>
     </>
   );
-};
+}
+
+export default React.memo(KanbanList);

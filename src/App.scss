@@ -1,13 +1,15 @@
 @import './theme.scss';
 
 header {
-  padding-left: 3rem;
-  height: 60px;
-  line-height: 60px;
-  background-color: white;
+  display: flex;
+  justify-content: center;
+  height: 70px;
   border-bottom: 1px solid $fontGray;
-  font-size: 1.5rem;
-  font-weight: 300;
+  .title {
+    line-height: 70px;
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
 }
 
 .kanbanListContainer {
